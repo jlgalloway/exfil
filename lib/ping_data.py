@@ -3,6 +3,20 @@ import sys
 import network
 import icmp
 
+class Unbuffered(object):
+    def __init__(self, stream):
+        self.stream = stream
+    def write(self, data):
+        self.stream.write(data)
+        self.stream.flush()
+    def writelines(self, data):
+        self.stream.writelines(data)
+        self.stream.flush()
+    def __getattr__(self, attr):
+        return getattr(self.stream, attr)
+    
+sys.stdout = Unbuffered(sys.stdout)
+
 def listen(port):
     print('Listening for data via ICMP.')
     l = network.get_listener('ICMP')
